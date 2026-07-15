@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mercado Express 2030</title>
+<style>
+:root{
+  --bg1:#173b2c;
+  --bg2:#3c8b61;
+  --panel:#fbfff9;
+  --ink:#213d31;
+  --gold:#ffd65c;
+  --cyan:#74dfe8;
+  --green:#2bb16e;
+  --red:#e65b65;
+  --soft:#d9eadf;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;width:100%;height:100%;overflow:hidden;
+  font-family:"Trebuchet MS",Arial,sans-serif;
+}
+body{
+  color:white;
+  background:
+    radial-gradient(circle at 14% 18%,rgba(255,255,255,.16) 0 2px,transparent 3px),
+    radial-gradient(circle at 84% 24%,rgba(255,255,255,.12) 0 2px,transparent 3px),
+    linear-gradient(150deg,var(--bg1),var(--bg2));
+}
+.shape{
+  position:fixed;border-radius:50%;z-index:0;opacity:.12;background:#d2f4de;
+}
+.s1{width:230px;height:230px;left:-80px;bottom:-70px}
+.s2{width:300px;height:300px;right:-90px;top:-115px}
+.app{
+  width:min(1160px,96vw);
+  height:min(710px,94vh);
+  margin:3vh auto;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  gap:12px;
+  position:relative;z-index:2;
+}
+header{
+  display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;
+}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{
+  width:66px;height:66px;border-radius:19px;
+  display:grid;place-items:center;
+  background:linear-gradient(145deg,#ffe373,#ffb344);
+  color:#213d31;font-size:38px;
+  box-shadow:0 7px 0 rgba(0,0,0,.22);
+  transform:rotate(-3deg);
+}
+h1{margin:0;font-size:clamp(27px,3vw,43px);line-height:1}
+.sub{margin:6px 0 0;color:#e8f9ed;font-size:clamp(13px,1.4vw,18px)}
+.status{
+  min-width:305px;padding:11px 15px;border-radius:18px;
+  background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.24);
+  backdrop-filter:blur(7px);
+}
+.statusrow{
+  display:flex;justify-content:space-between;gap:14px;
+  font-weight:900;margin-bottom:8px;
+}
+.bar{
+  height:12px;border-radius:999px;background:rgba(0,0,0,.24);overflow:hidden;
+}
+.bar div{
+  height:100%;width:0;background:linear-gradient(90deg,#ffe06a,#ffad39);transition:.35s;
+}
+main{
+  min-height:0;display:grid;grid-template-columns:250px 1fr;gap:14px;
+}
+.side{
+  border-radius:24px;padding:17px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  backdrop-filter:blur(7px);
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.agent{
+  text-align:center;font-size:92px;
+  filter:drop-shadow(0 8px 4px rgba(0,0,0,.24));
+  animation:float 3.3s ease-in-out infinite;
+}
+@keyframes float{50%{transform:translateY(-8px) rotate(2deg)}}
+.mission,.help{
+  border-radius:16px;background:rgba(7,39,26,.48);
+  padding:13px;line-height:1.38;
+}
+.mission{font-size:15px}
+.help{font-size:13px;color:#e7f8ec;margin-top:12px}
+.panel{
+  min-height:0;position:relative;overflow:hidden;
+  border-radius:27px;background:var(--panel);color:var(--ink);
+  box-shadow:0 13px 0 rgba(4,28,18,.28);
+  padding:clamp(18px,2.3vw,32px);
+  display:flex;flex-direction:column;justify-content:center;
+}
+.panel:before{
+  content:"";position:absolute;right:-65px;top:-70px;
+  width:195px;height:195px;border-radius:50%;
+  background:rgba(116,223,232,.18);
+}
+.level{
+  width:max-content;max-width:92%;
+  padding:7px 13px;border-radius:999px;
+  background:#e7f8ec;color:#2e6b4c;
+  font-size:14px;font-weight:900;margin-bottom:10px;
+}
+.title{
+  margin:0 0 7px;font-size:clamp(24px,2.7vw,36px);line-height:1.08;
+}
+.instructions{
+  margin:0 0 15px;color:#5d7569;font-size:15px;line-height:1.35;
+}
+button{font:inherit;border:0;cursor:pointer}
+.grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;
+}
+.card{
+  min-height:105px;border-radius:17px;border:3px solid var(--soft);
+  background:#fff;color:var(--ink);padding:10px;text-align:center;
+  font-weight:900;box-shadow:0 4px 0 #b8cdbf;cursor:pointer;transition:.12s;
+}
+.card:hover{transform:translateY(-2px);border-color:var(--cyan)}
+.card .emoji{font-size:34px;line-height:1}
+.card .small{font-size:13px;color:#5d756a;margin-top:5px}
+.card.chosen{background:#fff6d5;border-color:#f2bb26}
+.card.correct{background:#e8fff2;border-color:var(--green)}
+.card.wrong{background:#fff0f2;border-color:var(--red)}
+.feedback{
+  display:none;margin-top:12px;border-radius:14px;padding:11px 14px;
+  font-weight:900;line-height:1.35;
+}
+.feedback.show{display:block}
+.feedback.good{background:#e8fff2;color:#0b7c42}
+.feedback.bad{background:#fff0f2;color:#9e2738}
+.actions{
+  display:flex;justify-content:flex-end;gap:10px;margin-top:14px;
+}
+.btn{
+  border-radius:13px;padding:11px 18px;font-weight:900;
+  background:var(--ink);color:#fff;box-shadow:0 4px 0 #0d2119;
+}
+.budget{
+  display:grid;grid-template-columns:190px 1fr;gap:14px;
+}
+.wallet{
+  border-radius:18px;background:#eaf8ee;padding:15px;
+  display:flex;flex-direction:column;justify-content:center;text-align:center;
+}
+.wallet .emoji{font-size:48px}
+.wallet .amount{font-size:30px;font-weight:900;margin-top:4px}
+.wallet .small{font-size:13px;color:#557166;margin-top:4px}
+.shop{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:9px;
+}
+.product{
+  min-height:100px;border-radius:16px;border:3px solid var(--soft);
+  background:#fff;color:var(--ink);padding:9px;text-align:center;
+  font-weight:900;box-shadow:0 4px 0 #b8cdbf;cursor:pointer;
+}
+.product .emoji{font-size:31px}
+.product .price{font-size:13px;color:#5d7568;margin-top:4px}
+.product.chosen{background:#fff6d5;border-color:#f2bb26}
+.product.correct{background:#e8fff2;border-color:var(--green)}
+.product.wrong{background:#fff0f2;border-color:var(--red)}
+.sequence{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:9px;
+}
+.step{
+  min-height:105px;border-radius:16px;border:3px solid var(--soft);
+  background:#fff;color:var(--ink);padding:10px;text-align:center;
+  font-weight:900;box-shadow:0 4px 0 #b8cdbf;cursor:pointer;
+}
+.step .emoji{font-size:31px}
+.step.selected{background:#fff6d5;border-color:#f2bb26}
+.orderbar{
+  display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px;
+}
+.chip{
+  border-radius:12px;padding:8px 10px;background:#e7f8ec;
+  border:2px solid #bdd9c7;font-weight:900;font-size:13px;
+}
+.questionbox{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+}
+.scene{
+  border-radius:18px;background:#eef8ff;padding:16px;text-align:center;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.scene .big{font-size:62px}
+.scene .claim{font-size:18px;font-weight:900;line-height:1.3;margin-top:5px}
+.options{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+}
+.option{
+  min-height:68px;border-radius:15px;border:3px solid var(--soft);
+  background:#fff;color:var(--ink);font-weight:900;padding:10px;text-align:left;
+  box-shadow:0 4px 0 #b8cdbf;
+}
+.option:hover{border-color:var(--cyan)}
+.option.correct{background:#e8fff2;border-color:var(--green)}
+.option.wrong{background:#fff0f2;border-color:var(--red)}
+.end{text-align:center}
+.end .big{font-size:86px}
+.end h2{font-size:clamp(31px,4vw,44px);margin:8px 0}
+.end p{font-size:18px;line-height:1.45;max-width:700px;margin:0 auto 17px}
+footer{
+  display:flex;justify-content:space-between;align-items:center;
+  color:#e6f8ec;font-size:14px;
+}
+.smallbtn{
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.13);color:#fff;
+  border-radius:11px;padding:8px 12px;
+}
+@media(max-width:820px){
+  .app{height:96vh;margin:2vh auto}
+  header{grid-template-columns:1fr}
+  .status{min-width:0}
+  main{grid-template-columns:1fr}
+  .side{display:none}
+}
+@media(max-width:590px){
+  .grid,.shop{grid-template-columns:repeat(2,1fr)}
+  .budget,.questionbox{grid-template-columns:1fr}
+  .sequence{grid-template-columns:repeat(2,1fr)}
+  .options{grid-template-columns:1fr}
+  .app{width:97vw}
+  .logo{width:52px;height:52px;font-size:30px}
+}
+</style>
+</head>
+<body>
+<div class="shape s1"></div><div class="shape s2"></div>
+
+<div class="app">
+<header>
+  <div class="brand">
+    <div class="logo">🛒</div>
+    <div>
+      <h1>Mercado Express 2030</h1>
+      <p class="sub">Juego de refuerzo · UD 9 · Economía</p>
+    </div>
+  </div>
+  <div class="status">
+    <div class="statusrow">
+      <span id="stageText">Parada 1 de 4</span>
+      <span id="scoreText">⭐ 0 · ❤️❤️❤️</span>
+    </div>
+    <div class="bar"><div id="progress"></div></div>
+  </div>
+</header>
+
+<main>
+<aside class="side">
+  <div>
+    <div class="agent" id="agent">🧑‍🏫</div>
+    <div class="mission">
+      <strong>Ruta del mercado:</strong><br>
+      Completa cuatro paradas para demostrar que sabes organizar tus gastos, entender cómo llegan los productos y comprar de forma responsable.
+    </div>
+  </div>
+  <div class="help" id="help">
+    Los errores activan una pista. Aprende, continúa y consigue la insignia de Comprador Responsable 2030.
+  </div>
+</aside>
+
+<section class="panel" id="panel"></section>
+</main>
+
+<footer>
+  <span>Agentes 2030 · Ruta económica</span>
+  <button class="smallbtn" onclick="location.reload()">Reiniciar partida</button>
+</footer>
+</div>
+
+<script>
+let stage=0,score=0,lives=3,selected=[],order=[],questionIndex=0;
+const panel=document.getElementById("panel");
+const progress=document.getElementById("progress");
+const stageText=document.getElementById("stageText");
+const scoreText=document.getElementById("scoreText");
+const agent=document.getElementById("agent");
+const help=document.getElementById("help");
+
+function update(){
+  stageText.textContent=stage<4?`Parada ${stage+1} de 4`:"Ruta completada";
+  progress.style.width=`${Math.min(stage,4)*25}%`;
+  scoreText.textContent=`⭐ ${score} · ${"❤️".repeat(lives)}${"🤍".repeat(3-lives)}`;
+}
+function lose(){lives=Math.max(0,lives-1);update()}
+function nextStage(){stage++;selected=[];order=[];questionIndex=0;update();render()}
+function feedback(msg,good){
+  const f=document.getElementById("feedback");
+  f.className=`feedback show ${good?"good":"bad"}`;
+  f.innerHTML=msg;
+}
+function render(){
+  if(stage===0)renderNeeds();
+  else if(stage===1)renderBudget();
+  else if(stage===2)renderSequence();
+  else if(stage===3)renderAdvertising();
+  else renderEnd();
+}
+
+/* PARADA 1 */
+const needs=[
+  {e:"🥖",n:"Comida",need:true},
+  {e:"🏠",n:"Vivienda",need:true},
+  {e:"📚",n:"Educación",need:true},
+  {e:"🎮",n:"Videojuego nuevo",need:false},
+  {e:"👟",n:"Zapatillas de moda",need:false},
+  {e:"📱",n:"Móvil último modelo",need:false}
+];
+
+function renderNeeds(){
+  agent.textContent="🔎";
+  help.textContent="Selecciona solo las necesidades básicas.";
+  panel.innerHTML=`
+    <span class="level">PARADA 1 · NECESIDAD O DESEO</span>
+    <h2 class="title">¿Qué necesitamos realmente?</h2>
+    <p class="instructions">Selecciona exactamente tres necesidades básicas.</p>
+    <div class="grid" id="needsGrid"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="actions"><button class="btn" onclick="checkNeeds()">Comprobar</button></div>`;
+  const area=document.getElementById("needsGrid");
+  needs.forEach((x,i)=>{
+    const d=document.createElement("div");
+    d.className="card";d.dataset.i=i;
+    d.innerHTML=`<div class="emoji">${x.e}</div><div>${x.n}</div>`;
+    d.onclick=()=>{
+      d.classList.toggle("chosen");
+      selected=selected.includes(i)?selected.filter(v=>v!==i):[...selected,i];
+    };
+    area.appendChild(d);
+  });
+}
+function checkNeeds(){
+  const correct=needs.map((x,i)=>x.need?i:null).filter(x=>x!==null);
+  const ok=selected.length===3&&correct.every(i=>selected.includes(i));
+  document.querySelectorAll(".card").forEach((d,i)=>{
+    if(needs[i].need)d.classList.add("correct");
+    else if(selected.includes(i))d.classList.add("wrong");
+    d.onclick=null;
+  });
+  if(ok){
+    score+=4;
+    feedback("✅ Correcto. La alimentación, la vivienda y la educación son necesidades básicas.",true);
+  }else{
+    lose();
+    feedback("💡 Una necesidad es algo esencial para vivir y desarrollarnos. Los productos de moda suelen ser deseos.",false);
+  }
+  update();
+  document.querySelector(".actions").innerHTML=`<button class="btn" onclick="nextStage()">Ir al presupuesto ➜</button>`;
+}
+
+/* PARADA 2 */
+const products=[
+  {e:"🥗",n:"Alimentación",p:35,ok:true},
+  {e:"🚌",n:"Transporte",p:20,ok:true},
+  {e:"🐷",n:"Ahorro",p:15,ok:true},
+  {e:"🎧",n:"Auriculares nuevos",p:30,ok:false},
+  {e:"🍬",n:"Chucherías",p:15,ok:false},
+  {e:"🎟️",n:"Entrada de ocio",p:25,ok:false}
+];
+
+function renderBudget(){
+  agent.textContent="🧮";
+  help.textContent="Tienes 70 créditos. Cubre dos necesidades y guarda una parte.";
+  panel.innerHTML=`
+    <span class="level">PARADA 2 · PRESUPUESTO RÁPIDO</span>
+    <h2 class="title">Organiza 70 créditos</h2>
+    <p class="instructions">Selecciona exactamente tres opciones sin superar el presupuesto.</p>
+    <div class="budget">
+      <div class="wallet">
+        <div class="emoji">🪙</div>
+        <div class="amount" id="amount">0 / 70</div>
+        <div class="small">Créditos utilizados</div>
+      </div>
+      <div class="shop" id="shop"></div>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <div class="actions"><button class="btn" onclick="checkBudget()">Revisar presupuesto</button></div>`;
+  const area=document.getElementById("shop");
+  products.forEach((x,i)=>{
+    const d=document.createElement("div");
+    d.className="product";d.dataset.i=i;
+    d.innerHTML=`<div class="emoji">${x.e}</div><div>${x.n}</div><div class="price">${x.p} créditos</div>`;
+    d.onclick=()=>{
+      d.classList.toggle("chosen");
+      selected=selected.includes(i)?selected.filter(v=>v!==i):[...selected,i];
+      const total=selected.reduce((s,j)=>s+products[j].p,0);
+      document.getElementById("amount").textContent=`${total} / 70`;
+    };
+    area.appendChild(d);
+  });
+}
+function checkBudget(){
+  const total=selected.reduce((s,j)=>s+products[j].p,0);
+  const correct=[0,1,2];
+  const ok=selected.length===3&&total<=70&&correct.every(i=>selected.includes(i));
+  document.querySelectorAll(".product").forEach((d,i)=>{
+    if(correct.includes(i))d.classList.add("correct");
+    else if(selected.includes(i))d.classList.add("wrong");
+    d.onclick=null;
+  });
+  if(ok){
+    score+=5;
+    feedback("✅ Presupuesto equilibrado: alimentación, transporte y ahorro. Total: 70 créditos.",true);
+  }else{
+    lose();
+    feedback("💡 Primero cubrimos necesidades y después reservamos una parte para ahorrar.",false);
+  }
+  update();
+  document.querySelector(".actions").innerHTML=`<button class="btn" onclick="nextStage()">Seguir el producto ➜</button>`;
+}
+
+/* PARADA 3 */
+const sequence=[
+  {e:"🌾",n:"Materia prima"},
+  {e:"🏭",n:"Transformación"},
+  {e:"🚚",n:"Transporte"},
+  {e:"🏪",n:"Comercio"},
+  {e:"🛒",n:"Consumo"}
+];
+
+function renderSequence(){
+  agent.textContent="🚚";
+  help.textContent="Pulsa las etapas en el orden correcto.";
+  panel.innerHTML=`
+    <span class="level">PARADA 3 · EL VIAJE DEL PRODUCTO</span>
+    <h2 class="title">Ordena la cadena de producción</h2>
+    <p class="instructions">Empieza por la materia prima y termina con el consumidor.</p>
+    <div class="sequence" id="sequenceGrid"></div>
+    <div class="orderbar" id="orderbar"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="actions">
+      <button class="btn" onclick="resetOrder()">Borrar</button>
+      <button class="btn" onclick="checkOrder()">Comprobar orden</button>
+    </div>`;
+  const shuffled=[...sequence.keys()].sort(()=>Math.random()-.5);
+  const area=document.getElementById("sequenceGrid");
+  shuffled.forEach(i=>{
+    const d=document.createElement("div");
+    d.className="step";d.dataset.i=i;
+    d.innerHTML=`<div class="emoji">${sequence[i].e}</div><div>${sequence[i].n}</div>`;
+    d.onclick=()=>{
+      if(order.includes(i))return;
+      order.push(i);d.classList.add("selected");updateOrderBar();
+    };
+    area.appendChild(d);
+  });
+}
+function updateOrderBar(){
+  document.getElementById("orderbar").innerHTML=order.map((i,pos)=>`<span class="chip">${pos+1}. ${sequence[i].e} ${sequence[i].n}</span>`).join("");
+}
+function resetOrder(){
+  order=[];
+  document.querySelectorAll(".step").forEach(x=>x.classList.remove("selected"));
+  updateOrderBar();
+}
+function checkOrder(){
+  const correct=[0,1,2,3,4];
+  const ok=order.length===5&&correct.every((v,i)=>order[i]===v);
+  if(ok){
+    score+=5;
+    feedback("✅ Correcto: materia prima → transformación → transporte → comercio → consumo.",true);
+  }else{
+    lose();
+    feedback("💡 Los productos nacen de una materia prima, se transforman, se transportan, se venden y finalmente se consumen.",false);
+  }
+  update();
+  document.querySelectorAll(".step").forEach(x=>x.onclick=null);
+  document.querySelector(".actions").innerHTML=`<button class="btn" onclick="nextStage()">Detectar publicidad ➜</button>`;
+}
+
+/* PARADA 4 */
+const adQuestions=[
+  {
+    emoji:"📱",
+    claim:"«Todos tus amigos lo tienen. Cómpralo ya.»",
+    q:"¿Qué estrategia utiliza?",
+    opts:["Presión social","Información objetiva","Ahorro responsable","Producto local"],
+    ans:0,
+    why:"Intenta convencerte haciendo creer que necesitas imitar al grupo."
+  },
+  {
+    emoji:"🥤",
+    claim:"«Esta bebida te convertirá en campeón.»",
+    q:"¿Qué problema presenta?",
+    opts:["Promesa exagerada","Precio visible","Información completa","Consumo necesario"],
+    ans:0,
+    why:"Un producto no puede garantizar por sí solo que alguien sea campeón."
+  },
+  {
+    emoji:"⏰",
+    claim:"«Solo hoy. Si no compras ahora, perderás tu oportunidad.»",
+    q:"¿Qué intenta provocar?",
+    opts:["Compra impulsiva","Ahorro a largo plazo","Comparación de precios","Reflexión pausada"],
+    ans:0,
+    why:"La urgencia artificial busca que compres sin pensar ni comparar."
+  }
+];
+
+function renderAdvertising(){
+  agent.textContent="🕵️";
+  help.textContent="Lee el anuncio y elige la explicación correcta.";
+  const c=adQuestions[questionIndex];
+  panel.innerHTML=`
+    <span class="level">PARADA 4 · DETECTOR DE PUBLICIDAD · CASO ${questionIndex+1}/3</span>
+    <h2 class="title">${c.q}</h2>
+    <div class="questionbox">
+      <div class="scene">
+        <div class="big">${c.emoji}</div>
+        <div class="claim">${c.claim}</div>
+      </div>
+      <div class="options">
+        ${c.opts.map((o,i)=>`<button class="option" onclick="answerAd(${i},this)">${o}</button>`).join("")}
+      </div>
+    </div>
+    <div class="feedback" id="feedback"></div>`;
+}
+function answerAd(ans,btn){
+  const c=adQuestions[questionIndex];
+  const buttons=[...document.querySelectorAll(".option")];
+  buttons.forEach(b=>b.disabled=true);
+  buttons[c.ans].classList.add("correct");
+  if(ans===c.ans){
+    score+=3;btn.classList.add("correct");
+    feedback(`✅ ${c.why}`,true);
+  }else{
+    lose();btn.classList.add("wrong");
+    feedback(`💡 ${c.why}`,false);
+  }
+  update();
+  setTimeout(()=>{
+    questionIndex++;
+    if(questionIndex<adQuestions.length)renderAdvertising();
+    else panel.innerHTML+=`<div class="actions"><button class="btn" onclick="nextStage()">Ver resultado final ➜</button></div>`;
+  },900);
+}
+
+function renderEnd(){
+  progress.style.width="100%";
+  agent.textContent="🏆";
+  help.textContent="Ruta completada. Puedes repetirla para mejorar tu puntuación.";
+  let medal="🥉",title="Ruta económica superada",
+      msg="Has reforzado los conceptos esenciales de la unidad.";
+  if(score>=20){
+    medal="🏆";
+    title="¡Comprador Responsable 2030!";
+    msg="Distingues necesidades y deseos, organizas un presupuesto y analizas la publicidad con criterio.";
+  }else if(score>=14){
+    medal="🥈";
+    title="¡Gran trabajo económico!";
+    msg="Has comprendido la mayoría de los conceptos. Un nuevo intento puede llevarte a la insignia máxima.";
+  }
+  panel.innerHTML=`
+    <div class="end">
+      <div class="big">${medal}</div>
+      <h2>${title}</h2>
+      <p>Has conseguido <strong>${score} estrellas</strong>.<br>${msg}</p>
+      <button class="btn" onclick="location.reload()">Jugar de nuevo</button>
+    </div>`;
+  update();
+}
+update();render();
+</script>
+</body>
+</html>
